@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { PostType, Category, ApplicationFormState, EducationEntry, ExperienceEntry, JobPost } from '../types';
-import { CheckCircle, Circle, ArrowLeft, ArrowRight, Save, Wand2, Upload, Trash2, Plus, AlertCircle, FileText, X, Eye, Mail } from 'lucide-react';
+import { PostType, Category, ApplicationFormState, EducationEntry, ExperienceEntry, JobPost, FieldType, CustomField } from '../types';
+import { CheckCircle, Circle, ArrowLeft, ArrowRight, Save, Wand2, Upload, Trash2, Plus, AlertCircle, FileText, X, Eye, Mail, ClipboardList } from 'lucide-react';
 import { generateStatementOfPurpose } from '../services/geminiService';
-import { MOCK_POSTS } from './LandingPage';
+import { usePosts } from '../context/PostContext';
 
 const STEPS = [
   'Post Selection',
@@ -11,6 +11,7 @@ const STEPS = [
   'Education',
   'Experience',
   'Publications',
+  'Additional Info', // New Step for Custom Fields
   'Documents',
   'Review & Submit'
 ];
@@ -24,22 +25,27 @@ const INITIAL_STATE: ApplicationFormState = {
   experience: [],
   publications: [],
   documents: { photo: null, signature: null, resume: null, casteCertificate: null },
-  statementOfPurpose: ''
+  statementOfPurpose: '',
+  customValues: {}
 };
 
 export const ApplicationForm: React.FC = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
+  const { posts } = usePosts();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ApplicationFormState>(INITIAL_STATE);
   const [selectedPost, setSelectedPost] = useState<JobPost | null>(null);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [previews, setPreviews] = useState<{photo: string | null, signature: string | null, resume: string | null}>({ photo: null, signature: null, resume: null });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Validation State for Custom Fields
+  const [customErrors, setCustomErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (postId) {
-      const post = MOCK_POSTS.find(p => p.id === postId);
+      const post = posts.find(p => p.id === postId);
       if (post) {
         setSelectedPost(post);
         setFormData(prev => ({ ...prev, postId }));
@@ -49,7 +55,7 @@ export const ApplicationForm: React.FC = () => {
         navigate('/posts');
       }
     }
-  }, [postId, navigate, currentStep]);
+  }, [postId, navigate, currentStep, posts]);
 
   const handleNext = () => setCurrentStep(prev => Math.min(prev + 1, STEPS.length - 1));
   const handlePrev = () => setCurrentStep(prev => Math.max(prev - 1, 0));
@@ -59,6 +65,40 @@ export const ApplicationForm: React.FC = () => {
       ...formData,
       personalDetails: { ...formData.personalDetails, [e.target.name]: e.target.value }
     });
+  };
+
+  const validateCustomField = (field: CustomField, value: any) => {
+    if (!field.validation) return null;
+    const { pattern, minLength, maxLength, errorMessage } = field.validation;
+    
+    if (typeof value === 'string') {
+       if (minLength && value.length < minLength) return `Minimum ${minLength} characters required.`;
+       if (maxLength && value.length > maxLength) return `Maximum ${maxLength} characters allowed.`;
+       if (pattern) {
+         try {
+           const regex = new RegExp(pattern);
+           if (!regex.test(value)) return errorMessage || 'Invalid format.';
+         } catch (e) { console.error("Invalid Regex in field config", e); }
+       }
+    }
+    return null;
+  };
+
+  const handleCustomFieldChange = (field: CustomField, value: any) => {
+    setFormData({
+      ...formData,
+      customValues: { ...formData.customValues, [field.id]: value }
+    });
+    
+    // Validate on change
+    const error = validateCustomField(field, value);
+    if (error) {
+       setCustomErrors(prev => ({ ...prev, [field.id]: error }));
+    } else {
+       const newErrors = { ...customErrors };
+       delete newErrors[field.id];
+       setCustomErrors(newErrors);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof typeof formData.documents) => {
@@ -119,6 +159,147 @@ export const ApplicationForm: React.FC = () => {
       ...formData,
       education: formData.education.map(e => e.id === id ? { ...e, [field]: value } : e)
     });
+  };
+
+  // Logic to determine if a field should be shown
+  const isFieldVisible = (field: CustomField) => {
+    if (!field.logic) return true;
+    
+    const { dependsOnFieldId, condition, value } = field.logic;
+    const dependencyValue = String(formData.customValues[dependsOnFieldId] || '');
+
+    switch (condition) {
+      case 'EQUALS': return dependencyValue === value;
+      case 'NOT_EQUALS': return dependencyValue !== value;
+      case 'CONTAINS': return dependencyValue.includes(value);
+      default: return true;
+    }
+  };
+
+  const renderCustomFields = () => {
+    if (!selectedPost?.customFields || selectedPost.customFields.length === 0) {
+      return (
+        <div className="text-center py-12 text-slate-500">
+           <p>No additional specific details required for this post.</p>
+           <p className="text-sm">Please proceed to the next step.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold text-slate-800 border-b pb-2 flex items-center">
+            <span className="bg-blue-100 p-2 rounded-full mr-3 text-csir-blue"><ClipboardList size={20}/></span> 
+            Additional Details for {selectedPost.title}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {selectedPost.customFields.map((field) => {
+             if (!isFieldVisible(field)) return null;
+
+             const value = formData.customValues[field.id] || '';
+             const error = customErrors[field.id];
+             
+             if (field.type === FieldType.TEXTAREA) {
+               return (
+                 <div key={field.id} className="md:col-span-2">
+                   <label className="block text-sm font-medium text-slate-700 mb-1">{field.label} {field.required && <span className="text-red-500">*</span>}</label>
+                   <textarea 
+                     className={`w-full p-2 border rounded outline-none ${error ? 'border-red-500 bg-red-50' : 'focus:border-csir-blue'}`}
+                     placeholder={field.placeholder}
+                     value={value as string}
+                     onChange={(e) => handleCustomFieldChange(field, e.target.value)}
+                   />
+                   {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+                 </div>
+               );
+             }
+
+             if (field.type === FieldType.DROPDOWN) {
+               return (
+                 <div key={field.id}>
+                   <label className="block text-sm font-medium text-slate-700 mb-1">{field.label} {field.required && <span className="text-red-500">*</span>}</label>
+                   <select 
+                     className="w-full p-2 border rounded focus:border-csir-blue outline-none"
+                     value={value as string}
+                     onChange={(e) => handleCustomFieldChange(field, e.target.value)}
+                   >
+                     <option value="">Select Option</option>
+                     {field.options?.map((opt) => (
+                       <option key={opt} value={opt}>{opt}</option>
+                     ))}
+                   </select>
+                 </div>
+               );
+             }
+
+             if (field.type === FieldType.CHECKBOX) {
+                return (
+                 <div key={field.id} className="flex items-center mt-6">
+                   <input 
+                     type="checkbox" 
+                     className="h-4 w-4 text-csir-blue border-slate-300 rounded"
+                     checked={!!value}
+                     onChange={(e) => handleCustomFieldChange(field, e.target.checked)}
+                   />
+                   <label className="ml-2 block text-sm font-medium text-slate-700">{field.label} {field.required && <span className="text-red-500">*</span>}</label>
+                 </div>
+                );
+             }
+
+             if (field.type === FieldType.RADIO) {
+                return (
+                 <div key={field.id}>
+                   <label className="block text-sm font-medium text-slate-700 mb-1">{field.label} {field.required && <span className="text-red-500">*</span>}</label>
+                   <div className="flex space-x-4 mt-2">
+                     {field.options?.map((opt) => (
+                       <label key={opt} className="flex items-center space-x-2 cursor-pointer">
+                         <input 
+                           type="radio" 
+                           name={field.id}
+                           value={opt}
+                           checked={value === opt}
+                           onChange={(e) => handleCustomFieldChange(field, e.target.value)}
+                           className="text-csir-blue focus:ring-csir-blue"
+                         />
+                         <span className="text-sm text-slate-700">{opt}</span>
+                       </label>
+                     ))}
+                   </div>
+                 </div>
+                );
+             }
+
+             if (field.type === FieldType.FILE) {
+                return (
+                  <div key={field.id}>
+                     <label className="block text-sm font-medium text-slate-700 mb-1">{field.label} {field.required && <span className="text-red-500">*</span>}</label>
+                     <input 
+                       type="file" 
+                       className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-csir-blue hover:file:bg-blue-100"
+                       onChange={(e) => handleCustomFieldChange(field, e.target.files?.[0])}
+                     />
+                     {value && <p className="text-xs text-green-600 mt-1">File Selected: {(value as File).name}</p>}
+                  </div>
+                );
+             }
+
+             return (
+               <div key={field.id}>
+                 <label className="block text-sm font-medium text-slate-700 mb-1">{field.label} {field.required && <span className="text-red-500">*</span>}</label>
+                 <input 
+                   type={field.type} 
+                   className={`w-full p-2 border rounded outline-none ${error ? 'border-red-500 bg-red-50' : 'focus:border-csir-blue'}`}
+                   placeholder={field.placeholder}
+                   value={value as string}
+                   onChange={(e) => handleCustomFieldChange(field, e.target.value)}
+                 />
+                 {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+               </div>
+             );
+          })}
+        </div>
+      </div>
+    );
   };
 
   const renderStepContent = () => {
@@ -234,7 +415,8 @@ export const ApplicationForm: React.FC = () => {
            </div>
         </div>
       );
-      case 5: return (
+      case 5: return renderCustomFields();
+      case 6: return (
         <div className="space-y-8">
           <h2 className="text-xl font-semibold text-slate-800 border-b pb-2">Document Upload</h2>
           
@@ -325,7 +507,7 @@ export const ApplicationForm: React.FC = () => {
           </div>
         </div>
       );
-      case 6: return (
+      case 7: return (
         <div className="space-y-6 text-center animate-fadeIn">
           <div className="bg-green-50 text-green-800 p-8 rounded-xl mb-6 border border-green-100">
             <CheckCircle className="mx-auto h-20 w-20 text-green-500 mb-4" />
@@ -350,6 +532,19 @@ export const ApplicationForm: React.FC = () => {
                  <label className="text-xs text-slate-400 uppercase font-bold tracking-wider">Contact</label>
                  <p className="font-medium text-lg text-slate-800">{formData.personalDetails.mobile}</p>
                </div>
+               {/* Custom Fields Review */}
+               {selectedPost?.customFields?.map(field => {
+                  if (!isFieldVisible(field)) return null;
+                  let val = formData.customValues[field.id];
+                  if (field.type === FieldType.FILE && val) val = (val as File).name;
+                  
+                  return (
+                    <div key={field.id} className="border-b pb-2">
+                      <label className="text-xs text-slate-400 uppercase font-bold tracking-wider">{field.label}</label>
+                      <p className="font-medium text-lg text-slate-800">{String(val || '-')}</p>
+                    </div>
+                  );
+               })}
             </div>
             
             <div className="bg-slate-50 p-4 rounded-lg">

@@ -2,19 +2,11 @@ import React from 'react';
 import { PostType, JobPost } from '../types';
 import { Briefcase, Calendar, ChevronRight, Users, Award, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-// Mock Data
-export const MOCK_POSTS: JobPost[] = [
-  { id: '1', code: 'SCI-01-2024', title: 'Scientist "C"', type: PostType.SCIENTIST, department: 'Structural Dynamics', lastDate: '2024-06-30', vacancies: 4, description: 'Research in earthquake engineering and structural dynamics.', status: 'OPEN' },
-  { id: '2', code: 'TO-02-2024', title: 'Technical Officer', type: PostType.TECHNICAL_OFFICER, department: 'IT Infrastructure', lastDate: '2024-06-25', vacancies: 2, description: 'Managing data center operations and network security.', status: 'OPEN' },
-  { id: '3', code: 'TA-01-2024', title: 'Technical Assistant', type: PostType.TECHNICAL_ASSISTANT, department: 'Material Testing', lastDate: '2024-07-01', vacancies: 10, description: 'Assisting in lab testing of concrete and steel structures.', status: 'OPEN' },
-  { id: '4', code: 'TECH-03-2024', title: 'Technician (Electrical)', type: PostType.TECHNICIAN, department: 'Maintenance', lastDate: '2024-07-15', vacancies: 6, description: 'Maintenance of electrical substations and campus wiring.', status: 'OPEN' },
-  { id: '5', code: 'SCI-02-2024', title: 'Principal Scientist', type: PostType.SCIENTIST, department: 'Wind Engineering', lastDate: '2024-08-01', vacancies: 1, description: 'Leading research projects in wind tunnel testing.', status: 'OPEN' },
-  { id: '6', code: 'TO-04-2024', title: 'Senior Technical Officer', type: PostType.TECHNICAL_OFFICER, department: 'Instrumentation', lastDate: '2024-06-28', vacancies: 3, description: 'Calibration and maintenance of advanced sensors.', status: 'OPEN' },
-  { id: '7', code: 'TA-02-2024', title: 'Technical Assistant (Civil)', type: PostType.TECHNICAL_ASSISTANT, department: 'Construction', lastDate: '2024-07-10', vacancies: 8, description: 'Supervision of ongoing civil works in the campus.', status: 'OPEN' },
-];
+import { usePosts } from '../context/PostContext';
 
 export const LandingPage: React.FC = () => {
+  const { posts } = usePosts();
+
   return (
     <div className="flex flex-col space-y-12 pb-12">
       {/* Hero Section */}
@@ -69,7 +61,7 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MOCK_POSTS.map((post) => (
+          {posts.map((post) => (
             <div key={post.id} className="bg-white rounded-lg border border-slate-200 hover:border-csir-blue hover:shadow-md transition-all p-6 group">
               <div className="flex justify-between items-start mb-4">
                 <span className={`px-2 py-1 rounded text-xs font-semibold ${post.type === PostType.SCIENTIST ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>

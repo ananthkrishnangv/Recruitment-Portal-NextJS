@@ -1,7 +1,8 @@
 export enum UserRole {
   GUEST = 'GUEST',
   APPLICANT = 'APPLICANT',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
+  SUPERVISOR = 'SUPERVISOR'
 }
 
 export enum PostType {
@@ -31,6 +32,41 @@ export enum Category {
   PWD = 'PWD'
 }
 
+export enum FieldType {
+  TEXT = 'text',
+  NUMBER = 'number',
+  DATE = 'date',
+  DROPDOWN = 'dropdown',
+  TEXTAREA = 'textarea',
+  CHECKBOX = 'checkbox',
+  RADIO = 'radio',
+  FILE = 'file'
+}
+
+export interface FieldValidation {
+  pattern?: string; // Regex pattern
+  minLength?: number;
+  maxLength?: number;
+  errorMessage?: string;
+}
+
+export interface FieldLogic {
+  dependsOnFieldId: string;
+  condition: 'EQUALS' | 'NOT_EQUALS' | 'CONTAINS';
+  value: string;
+}
+
+export interface CustomField {
+  id: string;
+  label: string;
+  type: FieldType;
+  required: boolean;
+  options?: string[]; // For dropdowns/radio
+  placeholder?: string;
+  validation?: FieldValidation;
+  logic?: FieldLogic; // Conditional visibility
+}
+
 export interface User {
   id: string;
   name: string;
@@ -39,6 +75,7 @@ export interface User {
   avatarUrl?: string;
   mobile: string;
   aadhaar: string;
+  password?: string; // Added for login verification
 }
 
 export interface JobPost {
@@ -51,6 +88,7 @@ export interface JobPost {
   vacancies: number;
   description: string;
   status: 'OPEN' | 'CLOSED';
+  customFields?: CustomField[];
 }
 
 export interface EducationEntry {
@@ -94,6 +132,7 @@ export interface ApplicationFormState {
     casteCertificate: File | null;
   };
   statementOfPurpose: string;
+  customValues: Record<string, string | boolean | File>;
 }
 
 export interface DashboardStats {

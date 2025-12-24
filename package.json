@@ -1,6 +1,7 @@
 {
   "name": "csir-serc-portal",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "description": "Official CSIR-SERC Recruitment Portal. Multi-OS compatible (Rocky Linux, AlmaLinux, Ubuntu). Features GIGW 3.0 compliance, Dynamic Form Builder, and RBAC.",
   "type": "module",
   "scripts": {
     "dev": "vite",
