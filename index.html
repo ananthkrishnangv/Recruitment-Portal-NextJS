@@ -5,43 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CSIR-SERC Recruitment Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Noto Sans', 'sans-serif'],
+              sans: ['"Noto Sans"', 'sans-serif'],
             },
             colors: {
               csir: {
-                blue: '#003366',
-                light: '#e6f0fa',
-                accent: '#f59e0b', // Saffron-ish/Gold
-                green: '#10b981',
+                blue: '#0078D4', // Updated to Fluent Blue
+                light: '#EFF6FC', // Fluent Light Blue
+                accent: '#FFB900', // Fluent Yellow/Gold
+                green: '#107C10', // Fluent Green
+                dark: '#201F1E' // Fluent Dark Gray
               }
+            },
+            boxShadow: {
+              'fluent': '0 1.6px 3.6px 0 rgba(0,0,0,0.132), 0 0.3px 0.9px 0 rgba(0,0,0,0.108)',
+              'fluent-hover': '0 3.2px 7.2px 0 rgba(0,0,0,0.132), 0 0.6px 1.8px 0 rgba(0,0,0,0.108)',
             }
           },
         },
       }
     </script>
     <style>
-      body {
-        background-color: #f8fafc;
+      :root {
+        font-size: 17px; /* Increased from standard 16px (~1pt increase) */
       }
-      /* Custom scrollbar for professional feel */
+      body {
+        background-color: #F3F2F1; /* Fluent Gray Background */
+        font-family: 'Noto Sans', sans-serif;
+        color: #201F1E;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* Fluent Scrollbar */
       ::-webkit-scrollbar {
-        width: 8px;
+        width: 6px;
+        height: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
+        background: #C8C6C4;
+        border-radius: 3px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: #8A8886;
+      }
+      
+      @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+      .animate-marquee {
+        display: inline-block;
+        animation: marquee 30s linear infinite;
+      }
+      .animate-marquee:hover {
+        animation-play-state: paused;
+      }
+      
+      /* Fluent Inputs */
+      input:focus, select:focus, textarea:focus {
+        outline: 2px solid #0078D4;
+        outline-offset: -1px;
       }
     </style>
   <script type="importmap">

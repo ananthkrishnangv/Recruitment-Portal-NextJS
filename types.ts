@@ -2,7 +2,8 @@ export enum UserRole {
   GUEST = 'GUEST',
   APPLICANT = 'APPLICANT',
   ADMIN = 'ADMIN',
-  SUPERVISOR = 'SUPERVISOR'
+  SUPERVISOR = 'SUPERVISOR',
+  DIRECTOR = 'DIRECTOR'
 }
 
 export enum PostType {
@@ -15,12 +16,24 @@ export enum PostType {
 export enum ApplicationStatus {
   DRAFT = 'Draft',
   SUBMITTED = 'Submitted',
-  UNDER_SCRUTINY = 'Under Scrutiny',
-  ELIGIBLE = 'Eligible',
+  UNDER_SCRUTINY = 'Under Scrutiny', // Notification suppressed
+  SCRUTINY_COMPLETED = 'Scrutiny Completed', // Ready for Director
+  ELIGIBLE_WRITTEN = 'Eligible for Written Test',
+  ELIGIBLE_PRACTICAL = 'Eligible for Practical Test',
+  ELIGIBLE_INTERVIEW = 'Eligible for Interview',
   NOT_ELIGIBLE = 'Not Eligible',
-  INTERVIEW_SCHEDULED = 'Interview Scheduled',
-  SELECTED = 'Selected',
+  SELECTED = 'Selected', // Final OM sent
   REJECTED = 'Rejected'
+}
+
+export enum PostStatus {
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED', // Open for applications
+  APPLICATION_CLOSED = 'APPLICATION_CLOSED', // Deadline reached
+  SCRUTINY_IN_PROGRESS = 'SCRUTINY_IN_PROGRESS', // Admin Officer working
+  PENDING_DIRECTOR_APPROVAL = 'PENDING_DIRECTOR_APPROVAL', // Pushed to Director
+  DIRECTOR_APPROVED = 'DIRECTOR_APPROVED', // Back to Admin Officer
+  RESULT_DECLARED = 'RESULT_DECLARED' // Final List Uploaded
 }
 
 export enum Category {
@@ -87,8 +100,9 @@ export interface JobPost {
   lastDate: string;
   vacancies: number;
   description: string;
-  status: 'OPEN' | 'CLOSED';
+  status: PostStatus;
   customFields?: CustomField[];
+  finalResultPdfUrl?: string; // Link to the uploaded OM
 }
 
 export interface EducationEntry {
@@ -110,7 +124,11 @@ export interface ExperienceEntry {
 }
 
 export interface ApplicationFormState {
+  applicationNumber?: string; // Added for unique ID
+  submittedDate?: string;
   postId: string | null;
+  postTitle?: string; // Helper for display
+  status?: ApplicationStatus; // Track application status
   personalDetails: {
     fullName: string;
     dob: string;
@@ -126,13 +144,15 @@ export interface ApplicationFormState {
   experience: ExperienceEntry[];
   publications: string[];
   documents: {
-    photo: File | null;
+    photo: File | null; // Converted to base64 string for preview/storage usually
+    photoUrl?: string; // For the processed image
     signature: File | null;
     resume: File | null;
     casteCertificate: File | null;
   };
   statementOfPurpose: string;
   customValues: Record<string, string | boolean | File>;
+  remarks?: string; // For Scrutiny rejection reasons
 }
 
 export interface DashboardStats {
@@ -140,4 +160,43 @@ export interface DashboardStats {
   pendingScrutiny: number;
   eligible: number;
   interviews: number;
+}
+
+export interface LinkItem {
+  id: string;
+  label: string;
+  url: string;
+}
+
+export interface NewsItem {
+  id: string;
+  text: string;
+  isNew: boolean;
+  link?: string;
+}
+
+export type TicketCategory = 'Application Issue' | 'Document Upload' | 'Photo Upload' | 'PDF Download' | 'Payment' | 'Other';
+
+export interface TicketReply {
+  id: string;
+  senderId: string;
+  senderName: string; // 'Admin' or User Name
+  role: UserRole;
+  message: string;
+  timestamp: string;
+}
+
+export interface SupportTicket {
+  id: string; // e.g., TKT-12345
+  userId: string;
+  userName: string; // Snapshot of user name
+  applicationNumber?: string; 
+  postId?: string;
+  category: TicketCategory;
+  subject: string;
+  description: string; // Initial message
+  attachment?: File | null;
+  status: 'OPEN' | 'RESOLVED' | 'CLOSED';
+  createdAt: string;
+  replies: TicketReply[];
 }
