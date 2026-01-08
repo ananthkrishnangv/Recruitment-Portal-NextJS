@@ -35,7 +35,22 @@ export interface SiteConfig {
   notifications: {
     smsEnabled: boolean;
     whatsappEnabled: boolean;
-    apiKey: string;
+    // WhatsApp Meta API Config
+    whatsapp: {
+      provider: string; // 'Meta' | 'Twilio'
+      phoneNumberId: string;
+      accessToken: string;
+      businessAccountId: string;
+      templateName: string; // e.g., 'application_update'
+    };
+    // SMS Gateway Config
+    sms: {
+      gatewayUrl: string;
+      apiKey: string;
+      senderId: string; // e.g., 'CSIRTN'
+      entityId: string; // DLT Entity ID
+      templateId: string; // DLT Template ID
+    };
   };
   news: NewsItem[];
 }
@@ -85,7 +100,20 @@ const DEFAULT_CONFIG: SiteConfig = {
   notifications: {
     smsEnabled: false,
     whatsappEnabled: false,
-    apiKey: ""
+    whatsapp: {
+      provider: 'Meta',
+      phoneNumberId: '',
+      accessToken: '',
+      businessAccountId: '',
+      templateName: 'application_status_update'
+    },
+    sms: {
+      gatewayUrl: 'https://sms.gov.in/api/v1/send',
+      apiKey: '',
+      senderId: 'CSIRSC',
+      entityId: '',
+      templateId: ''
+    }
   },
   news: [
     { id: '1', text: "THIS IS A DEMO SITE FOR CSIR-SERC RECRUITMENT", isNew: false },
@@ -111,6 +139,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // Deep merge to ensure new fields (like whatsapp object) are present if old config exists in localstorage
         setConfig({ 
             ...DEFAULT_CONFIG, 
             ...parsed, 
@@ -118,7 +147,12 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             footer: { ...DEFAULT_CONFIG.footer, ...parsed.footer },
             landing: { ...DEFAULT_CONFIG.landing, ...parsed.landing },
             smtp: { ...DEFAULT_CONFIG.smtp, ...parsed.smtp },
-            notifications: { ...DEFAULT_CONFIG.notifications, ...parsed.notifications },
+            notifications: { 
+              ...DEFAULT_CONFIG.notifications, 
+              ...parsed.notifications,
+              whatsapp: { ...DEFAULT_CONFIG.notifications.whatsapp, ...parsed.notifications?.whatsapp },
+              sms: { ...DEFAULT_CONFIG.notifications.sms, ...parsed.notifications?.sms }
+            },
             news: parsed.news || DEFAULT_CONFIG.news
         });
       } catch (e) {

@@ -17,16 +17,18 @@
             },
             colors: {
               csir: {
-                blue: '#0078D4', // Updated to Fluent Blue
-                light: '#EFF6FC', // Fluent Light Blue
-                accent: '#FFB900', // Fluent Yellow/Gold
-                green: '#107C10', // Fluent Green
-                dark: '#201F1E' // Fluent Dark Gray
+                blue: '#0078D4',
+                light: '#F3F9FD',
+                accent: '#FFB900',
+                green: '#107C10',
+                gray: '#F3F2F1',
+                text: '#323130'
               }
             },
             boxShadow: {
-              'fluent': '0 1.6px 3.6px 0 rgba(0,0,0,0.132), 0 0.3px 0.9px 0 rgba(0,0,0,0.108)',
-              'fluent-hover': '0 3.2px 7.2px 0 rgba(0,0,0,0.132), 0 0.6px 1.8px 0 rgba(0,0,0,0.108)',
+              'fluent': '0 1.6px 3.6px 0 rgba(0,0,0,0.1), 0 0.3px 0.9px 0 rgba(0,0,0,0.08)',
+              'fluent-lg': '0 6.4px 14.4px 0 rgba(0,0,0,0.13), 0 1.2px 3.6px 0 rgba(0,0,0,0.11)',
+              'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
             }
           },
         },
@@ -34,28 +36,59 @@
     </script>
     <style>
       :root {
-        font-size: 17px; /* Increased from standard 16px (~1pt increase) */
+        font-size: 17px;
       }
       body {
-        background-color: #F3F2F1; /* Fluent Gray Background */
+        background-color: #FAF9F8; /* Soft Fluent Off-white */
         font-family: 'Noto Sans', sans-serif;
-        color: #201F1E;
+        color: #323130;
         -webkit-font-smoothing: antialiased;
       }
-      /* Fluent Scrollbar */
+      
+      .glass-morphism {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      /* Fluent Control Overrides */
+      input, select, textarea {
+        border-radius: 4px !important;
+        border: 1px solid #8A8886 !important;
+        background-color: #FFFFFF !important;
+        transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+      }
+      input:hover, select:hover, textarea:hover {
+        border-color: #323130 !important;
+      }
+      input:focus, select:focus, textarea:focus {
+        outline: none !important;
+        border-color: #0078D4 !important;
+        border-bottom-width: 2px !important;
+        box-shadow: none !important;
+      }
+
       ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
         background: #C8C6C4;
-        border-radius: 3px;
+        border-radius: 10px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #8A8886;
+        background: #A19F9D;
       }
       
       @keyframes marquee {
@@ -64,16 +97,10 @@
       }
       .animate-marquee {
         display: inline-block;
-        animation: marquee 30s linear infinite;
+        animation: marquee 40s linear infinite;
       }
       .animate-marquee:hover {
         animation-play-state: paused;
-      }
-      
-      /* Fluent Inputs */
-      input:focus, select:focus, textarea:focus {
-        outline: 2px solid #0078D4;
-        outline-offset: -1px;
       }
     </style>
   <script type="importmap">

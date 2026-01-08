@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from 'react';
 import { JobPost, PostType, FieldType, PostStatus } from '../types';
 
@@ -8,13 +9,13 @@ const INITIAL_POSTS: JobPost[] = [
     title: 'Scientist "C"', 
     type: PostType.SCIENTIST, 
     department: 'Structural Dynamics', 
-    lastDate: '2024-06-30', 
+    lastDate: '2024-12-30', 
     vacancies: 4, 
+    breakdown: { ur: 2, sc: 1, st: 0, obc: 1, ews: 0, pwd: 0 },
     description: 'Research in earthquake engineering and structural dynamics.', 
     status: PostStatus.PUBLISHED,
     customFields: [
-      { id: 'cf1', label: 'Area of Specialization', type: FieldType.TEXT, required: true, placeholder: 'e.g., Seismic Design' },
-      { id: 'cf2', label: 'GATE Score', type: FieldType.NUMBER, required: false }
+      { id: 'cf1', label: 'Area of Specialization', type: FieldType.TEXT, required: true, placeholder: 'e.g., Seismic Design' }
     ]
   },
   { 
@@ -23,17 +24,24 @@ const INITIAL_POSTS: JobPost[] = [
     title: 'Technical Officer', 
     type: PostType.TECHNICAL_OFFICER, 
     department: 'IT Infrastructure', 
-    lastDate: '2024-06-25', 
+    lastDate: '2024-11-25', 
     vacancies: 2, 
+    breakdown: { ur: 1, sc: 0, st: 0, obc: 0, ews: 1, pwd: 0 },
     description: 'Managing data center operations and network security.', 
-    status: PostStatus.PUBLISHED,
-    customFields: [
-       { id: 'cf3', label: 'Certifications', type: FieldType.DROPDOWN, required: true, options: ['CCNA', 'AWS', 'Azure', 'None'] }
-    ]
+    status: PostStatus.PUBLISHED
   },
-  { id: '3', code: 'TA-01-2024', title: 'Technical Assistant', type: PostType.TECHNICAL_ASSISTANT, department: 'Material Testing', lastDate: '2024-07-01', vacancies: 10, description: 'Assisting in lab testing of concrete and steel structures.', status: PostStatus.DIRECTOR_APPROVED, customFields: [] },
-  { id: '4', code: 'TECH-03-2024', title: 'Technician (Electrical)', type: PostType.TECHNICIAN, department: 'Maintenance', lastDate: '2024-07-15', vacancies: 6, description: 'Maintenance of electrical substations and campus wiring.', status: PostStatus.PENDING_DIRECTOR_APPROVAL, customFields: [] },
-  { id: '5', code: 'SCI-02-2024', title: 'Principal Scientist', type: PostType.SCIENTIST, department: 'Wind Engineering', lastDate: '2024-08-01', vacancies: 1, description: 'Leading research projects in wind tunnel testing.', status: PostStatus.DRAFT, customFields: [] },
+  { 
+    id: '3', 
+    code: 'TA-01-2024', 
+    title: 'Technical Assistant', 
+    type: PostType.TECHNICAL_ASSISTANT, 
+    department: 'Material Testing', 
+    lastDate: '2024-07-01', 
+    vacancies: 5, 
+    breakdown: { ur: 2, sc: 1, st: 1, obc: 1, ews: 0, pwd: 0 },
+    description: 'Assisting in lab testing of concrete and steel structures.', 
+    status: PostStatus.SHORTLIST_APPROVED 
+  }
 ];
 
 interface PostContextType {

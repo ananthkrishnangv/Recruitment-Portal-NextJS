@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PostType, Category, ApplicationFormState, EducationEntry, ExperienceEntry, JobPost, FieldType, CustomField } from '../types';
@@ -25,7 +26,7 @@ const INITIAL_STATE: ApplicationFormState = {
   },
   education: [],
   experience: [],
-  publications: [],
+  // Removed publications to fix type mismatch with ApplicationFormState
   documents: { photo: null, signature: null, resume: null, casteCertificate: null },
   statementOfPurpose: '',
   customValues: {}
