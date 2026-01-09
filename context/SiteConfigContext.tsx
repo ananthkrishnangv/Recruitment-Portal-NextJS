@@ -1,59 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { LinkItem, NewsItem } from '../types';
 
-export interface SiteConfig {
-  header: {
-    ministryText: string;
-    organizationName: string;
-    organizationSubtitle: string;
-    parentOrganization: string;
-    logoUrl: string;
-  };
-  footer: {
-    aboutText: string;
-    address: string;
-    copyrightText: string;
-    contactEmail: string;
-    quickLinks: LinkItem[];
-    supportLinks: LinkItem[];
-  };
-  assistance: {
-    title: string;
-    description: string;
-  };
-  landing: {
-    heroImageUrl: string;
-  };
-  smtp: {
-    enabled: boolean;
-    host: string;
-    port: number;
-    user: string;
-    pass: string;
-    fromEmail: string;
-  };
-  notifications: {
-    smsEnabled: boolean;
-    whatsappEnabled: boolean;
-    // WhatsApp Meta API Config
-    whatsapp: {
-      provider: string; // 'Meta' | 'Twilio'
-      phoneNumberId: string;
-      accessToken: string;
-      businessAccountId: string;
-      templateName: string; // e.g., 'application_update'
-    };
-    // SMS Gateway Config
-    sms: {
-      gatewayUrl: string;
-      apiKey: string;
-      senderId: string; // e.g., 'CSIRTN'
-      entityId: string; // DLT Entity ID
-      templateId: string; // DLT Template ID
-    };
-  };
-  news: NewsItem[];
-}
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { SiteConfig } from '../types';
 
 const DEFAULT_CONFIG: SiteConfig = {
   header: {
@@ -86,8 +33,8 @@ const DEFAULT_CONFIG: SiteConfig = {
     description: "For technical queries regarding the online application portal, please contact our helpdesk. Check the FAQ section before raising a ticket."
   },
   landing: {
-    // CSIR-SERC Main Building Image
-    heroImageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/CSIR-SERC_Main_Building.jpg/1200px-CSIR-SERC_Main_Building.jpg"
+    heroImageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/CSIR-SERC_Main_Building.jpg/1200px-CSIR-SERC_Main_Building.jpg",
+    bannerUrl: "https://serc.res.in/assets/images/banner.jpg"
   },
   smtp: {
     enabled: true,
@@ -100,6 +47,7 @@ const DEFAULT_CONFIG: SiteConfig = {
   notifications: {
     smsEnabled: false,
     whatsappEnabled: false,
+    telegramEnabled: false,
     whatsapp: {
       provider: 'Meta',
       phoneNumberId: '',
@@ -113,7 +61,19 @@ const DEFAULT_CONFIG: SiteConfig = {
       senderId: 'CSIRSC',
       entityId: '',
       templateId: ''
+    },
+    telegram: {
+      botToken: '',
+      chatId: ''
     }
+  },
+  backups: {
+    autoBackupEnabled: true,
+    frequency: 'DAILY',
+    includeDocuments: true,
+    includeImages: true,
+    sqlDump: true,
+    lastBackupDate: new Date().toISOString()
   },
   news: [
     { id: '1', text: "THIS IS A DEMO SITE FOR CSIR-SERC RECRUITMENT", isNew: false },
@@ -139,21 +99,23 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Deep merge to ensure new fields (like whatsapp object) are present if old config exists in localstorage
         setConfig({ 
             ...DEFAULT_CONFIG, 
-            ...parsed, 
-            header: { ...DEFAULT_CONFIG.header, ...parsed.header },
-            footer: { ...DEFAULT_CONFIG.footer, ...parsed.footer },
-            landing: { ...DEFAULT_CONFIG.landing, ...parsed.landing },
-            smtp: { ...DEFAULT_CONFIG.smtp, ...parsed.smtp },
-            notifications: { 
-              ...DEFAULT_CONFIG.notifications, 
-              ...parsed.notifications,
-              whatsapp: { ...DEFAULT_CONFIG.notifications.whatsapp, ...parsed.notifications?.whatsapp },
-              sms: { ...DEFAULT_CONFIG.notifications.sms, ...parsed.notifications?.sms }
+            ...parsed,
+            // Ensure deep merge for nested objects to prevent crashes on missing new keys
+            notifications: {
+                ...DEFAULT_CONFIG.notifications,
+                ...parsed.notifications,
+                telegram: { ...DEFAULT_CONFIG.notifications.telegram, ...parsed.notifications?.telegram }
             },
-            news: parsed.news || DEFAULT_CONFIG.news
+            backups: {
+                ...DEFAULT_CONFIG.backups,
+                ...parsed.backups
+            },
+            landing: {
+                ...DEFAULT_CONFIG.landing,
+                ...parsed.landing
+            }
         });
       } catch (e) {
         console.error("Failed to parse site config", e);

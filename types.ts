@@ -1,5 +1,4 @@
 
-
 export enum UserRole {
   GUEST = 'GUEST',
   APPLICANT = 'APPLICANT',
@@ -60,7 +59,6 @@ export enum FieldType {
   FILE = 'file'
 }
 
-// Fixed: Added 'logic' property to support conditional field visibility logic in ApplicationForm.tsx
 export interface CustomField {
   id: string;
   label: string;
@@ -202,4 +200,71 @@ export interface NewsItem {
   id: string;
   text: string;
   isNew: boolean;
+}
+
+// Config Types
+export interface SiteConfig {
+  header: {
+    ministryText: string;
+    organizationName: string;
+    organizationSubtitle: string;
+    parentOrganization: string;
+    logoUrl: string;
+  };
+  footer: {
+    aboutText: string;
+    address: string;
+    copyrightText: string;
+    contactEmail: string;
+    quickLinks: LinkItem[];
+    supportLinks: LinkItem[];
+  };
+  assistance: {
+    title: string;
+    description: string;
+  };
+  landing: {
+    heroImageUrl: string;
+    bannerUrl: string; // Added for banner management
+  };
+  smtp: {
+    enabled: boolean;
+    host: string;
+    port: number;
+    user: string;
+    pass: string;
+    fromEmail: string;
+  };
+  notifications: {
+    smsEnabled: boolean;
+    whatsappEnabled: boolean;
+    telegramEnabled: boolean; // Added Telegram
+    whatsapp: {
+      provider: string;
+      phoneNumberId: string;
+      accessToken: string;
+      businessAccountId: string;
+      templateName: string;
+    };
+    sms: {
+      gatewayUrl: string;
+      apiKey: string;
+      senderId: string;
+      entityId: string;
+      templateId: string;
+    };
+    telegram: { // Added Telegram Config
+      botToken: string;
+      chatId: string; // Default channel or dynamic
+    };
+  };
+  backups: { // Added Backup Config
+    autoBackupEnabled: boolean;
+    frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+    lastBackupDate?: string;
+    includeDocuments: boolean;
+    includeImages: boolean;
+    sqlDump: boolean;
+  };
+  news: NewsItem[];
 }

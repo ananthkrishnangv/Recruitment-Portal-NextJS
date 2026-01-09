@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, UserRole } from '../types';
-import { ShieldCheck, LogIn, ChevronLeft } from 'lucide-react';
+// Added missing AlertCircle and ArrowRight icons to lucide-react imports
+import { ShieldCheck, LogIn, ChevronLeft, Fingerprint, Info, AlertCircle, ArrowRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSiteConfig } from '../context/SiteConfigContext';
 
@@ -20,13 +21,13 @@ export const Login: React.FC<LoginProps> = ({ onLogin, users }) => {
     setError('');
 
     if (!/^\d{12}$/.test(identifier)) {
-      setError('Please enter a valid 12-digit Aadhaar Number.');
+      setError('Aadhaar Number must be exactly 12 digits.');
       return;
     }
     const user = users.find(u => u.aadhaar === identifier && u.role === UserRole.APPLICANT);
     
     if (!user) {
-      setError('User not found. Please check Aadhaar number or register.');
+      setError('Record not found. Ensure Aadhaar is correct or Register.');
       return;
     }
 
@@ -35,60 +36,66 @@ export const Login: React.FC<LoginProps> = ({ onLogin, users }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF9F8]">
-      <div 
-        className="flex-1 flex items-center justify-center bg-cover bg-center relative p-4"
-        style={{ backgroundImage: `url('${config.landing.heroImageUrl}')` }}
-      >
-        <div className="absolute inset-0 bg-white/60 backdrop-blur-sm"></div>
+    <div className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center bg-white p-4 relative overflow-hidden">
+      {/* Abstract background blobs */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-brand-50 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 opacity-60"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-50 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2 opacity-60"></div>
 
-        <div className="relative z-10 w-full max-w-md">
-          <div className="bg-white p-10 rounded-2xl shadow-fluent-lg border border-[#EDEBE9]">
-            <div className="text-center mb-10">
-               <div className="bg-csir-blue/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-sm">
-                 <ShieldCheck className="text-csir-blue w-10 h-10" />
-               </div>
-               <h2 className="text-3xl font-black text-[#323130] uppercase tracking-tight">Candidate Portal</h2>
-               <p className="text-[#605E5C] text-[10px] font-black mt-2 uppercase tracking-[0.3em] opacity-70">Identity Verification Gateway</p>
-            </div>
-            
-            <form onSubmit={handleLogin} className="space-y-8">
-              <div>
-                <label className="block text-[11px] font-black text-[#323130] uppercase tracking-[0.2em] mb-3">
-                  Aadhaar Number (12 Digits)
-                </label>
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-white p-10 md:p-12 rounded-[3rem] shadow-2xl border border-slate-100">
+          <div className="text-center mb-12">
+             <div className="w-20 h-20 bg-slate-900 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl shadow-slate-200">
+               <Fingerprint className="text-white" size={40} />
+             </div>
+             <h2 className="text-4xl font-heading font-black text-slate-900 mb-4 tracking-tight uppercase">Portal Login</h2>
+             <p className="text-slate-400 text-xs font-black uppercase tracking-[0.2em]">Identity Verification Node</p>
+          </div>
+          
+          <form onSubmit={handleLogin} className="space-y-10">
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">
+                Aadhaar UID (12 Digits)
+              </label>
+              <div className="relative group">
                 <input 
                   type="text" 
                   placeholder="0000 0000 0000"
-                  className="w-full p-4 bg-white border border-[#8A8886] rounded text-[#323130] font-black tracking-[0.4em] text-center focus:border-csir-blue focus:ring-1 focus:ring-csir-blue outline-none transition-all"
+                  className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-slate-900 font-black tracking-[0.3em] text-center text-xl focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   required
                   maxLength={12}
                 />
               </div>
-
-              {error && (
-                <div className="bg-[#FDF3F4] border border-[#FDE7E9] p-4 rounded text-red-600 text-[11px] font-black uppercase text-center animate-pulse tracking-wider">
-                  {error}
-                </div>
-              )}
-              
-              <button type="submit" className="w-full py-4 bg-csir-blue hover:bg-[#005A9E] text-white rounded font-black text-sm uppercase tracking-[0.2em] shadow-fluent transition-all transform hover:-translate-y-1 flex items-center justify-center">
-                 <LogIn size={18} className="mr-3"/> Authenticate & Login
-              </button>
-            </form>
-
-            <div className="mt-10 pt-8 border-t border-[#EDEBE9] text-center flex flex-col space-y-4">
-                <p className="text-[#605E5C] text-xs font-bold uppercase tracking-wider">
-                  New Applicant? <Link to="/register" className="text-csir-blue font-black hover:underline ml-2">Register Identity</Link>
-                </p>
-                <Link to="/" className="text-[#A19F9D] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center hover:text-csir-blue">
-                   <ChevronLeft size={12} className="mr-1"/> Back to Homepage
-                </Link>
             </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-100 p-5 rounded-2xl text-red-600 text-xs font-black uppercase text-center flex items-center justify-center shadow-sm">
+                <AlertCircle size={16} className="mr-2"/> {error}
+              </div>
+            )}
+            
+            <button type="submit" className="w-full py-5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-slate-200 transition-all transform active:scale-95 flex items-center justify-center text-sm">
+               Begin Authentication <ArrowRight size={18} className="ml-3 opacity-50"/>
+            </button>
+          </form>
+
+          <div className="mt-12 pt-10 border-t border-slate-100 text-center space-y-6">
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                No recruitment account? <Link to="/register" className="text-brand-600 font-black hover:underline ml-2">Register UID</Link>
+              </p>
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-start space-x-3 text-left border border-slate-100">
+                <Info size={16} className="text-brand-500 shrink-0 mt-0.5" />
+                <p className="text-[10px] text-slate-500 font-bold uppercase leading-relaxed tracking-wider">
+                  Authentication is handled via the secure GoI UIDAI nodal point. Please ensure your mobile number is linked for future OTP verification.
+                </p>
+              </div>
           </div>
         </div>
+        
+        <Link to="/" className="mt-8 mx-auto text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] flex items-center justify-center hover:text-slate-900 transition-colors">
+            <ChevronLeft size={14} className="mr-2"/> Back to main portal
+        </Link>
       </div>
     </div>
   );
