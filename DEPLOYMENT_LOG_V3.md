@@ -19,6 +19,10 @@ The entire application stack has been modernized to the latest stable versions:
 
 ## 🛠️ Changes & Fixes
 
+### Critical Runtime Fixes (Post-Deployment)
+- **Map Component Crash:** Resolved a client-side exception where `us-aea-en.js` failed to find the global `jsVectorMap` object. Implemented a lazy-loading strategy with a window polyfill in `src/app/(home)/_components/region-labels/map.tsx` to ensure proper initialization order.
+- **TypeScript Compliance:** Suppressed module resolution errors for legacy map script imports to ensure successful production builds.
+
 ### Tailwind CSS 4.0 Migration
 - **Syntax Updates:** Removed invalid spaces in `@apply` directives (e.g., `dark: !class` -> `dark:!class`).
 - **Opacity Handling:** Migrated legacy `bg-opacity-*` utilities to slash syntax (e.g., `bg-primary/5`).
@@ -32,6 +36,7 @@ The entire application stack has been modernized to the latest stable versions:
 - **Build:** Remote build succeeded on Host 10.10.200.53.
 - **Runtime:** Container running on 10.30.0.14:3000.
 - **Versions Confirmed:** Node v24, Next v15, React v19, Tailwind v4.
+- **Visual Validation:** Dashboard loads without client-side exceptions.
 
 ---
 **Signed off by:** Antigravity (AI Assistant)
