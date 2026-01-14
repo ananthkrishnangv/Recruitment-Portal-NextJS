@@ -2,15 +2,14 @@
 
 ## 🚀 What's New in v3.0.0
 
-**Major Upgrade** from Vite to Next.js 15 with complete modernization:
+**Major Upgrade** to modern stack with enhanced performance and security:
 
-- ✅ **Next.js 15.1.6** - Modern React framework with full SSR and SSG support
-- ✅ **React 19.0.0** - Latest React with improved performance
-- ✅ **Tailwind CSS 4.0.0** - Latest Tailwind with @import syntax
+- ✅ **Next.js 15.1.6** - Latest framework with stabilizing app directory
+- ✅ **React 19.0.0** - Latest React features
+- ✅ **Tailwind CSS 4.0.0** - CSS-first configuration and enhanced performance
+- ✅ **Node.js 24.12.0** - Latest runtime for improved speed
 - ✅ **Server-Side Rendering (SSR)** - Pure SSR with static generation
-- ✅ **Zero Hydration Issues** - Removed client-side conflicts
-- ✅ **Node.js 20-slim** - Optimized production base image
-- ✅ **Production-Ready Deployment** - Verified on Podman (10.30.0.14:3000)
+- ✅ **Production-Ready Deployment** - Verified on RockyLinux 10 (Podman)
 - ✅ **GIGW 3.0 Compliant** - Security headers and compliance built-in
 - ✅ **Macvlan Network Support** - Static IP (10.30.0.14) with mcvlan1 network
 
