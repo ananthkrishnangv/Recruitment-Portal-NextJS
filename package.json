@@ -1,29 +1,31 @@
 {
-  "name": "csir-serc-portal",
-  "version": "1.1.0",
-  "description": "Official CSIR-SERC Recruitment Portal. Multi-OS compatible (Rocky Linux, AlmaLinux, Ubuntu). Features GIGW 3.0 compliance, Dynamic Form Builder, and RBAC.",
-  "type": "module",
+  "name": "csir-serc-recruitment-portal",
+  "version": "3.0.0",
+  "description": "CSIR-SERC Recruitment Portal - Next.js Edition with React 19, Tailwind CSS 4, and enhanced performance. GIGW 3.0 compliant.",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@google/genai": "^0.1.0",
-    "lucide-react": "^0.344.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
-    "recharts": "^2.12.2"
+    "@google/generative-ai": "^0.7.0",
+    "lucide-react": "^0.446.0",
+    "next": "15.1.6",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
-    "@types/react": "^18.2.64",
-    "@types/react-dom": "^18.2.21",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.18",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.1.6"
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.6",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
   }
 }
