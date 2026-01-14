@@ -1,16 +1,18 @@
-# CSIR-SERC Recruitment Portal - Next.js Edition v2.0.0
+# CSIR-SERC Recruitment Portal - Next.js Edition v3.0.0
 
-## 🚀 What's New
+## 🚀 What's New in v3.0.0
 
-This is a **complete redesign** of the CSIR-SERC Recruitment Portal with modern technologies:
+**Major Upgrade** from Vite to Next.js 15 with complete modernization:
 
-- ✅ **Next.js 15** - Modern React framework with SSR, SSG, and API routes
-- ✅ **React 18.3** - Latest React with concurrent rendering
-- ✅ **Tailwind CSS 3.4** - Utility-first CSS for responsive design
-- ✅ **Node.js 20 LTS** - Long-term support Node.js runtime
-- ✅ **Production-Ready Docker** - Multi-stage builds, non-root user, health checks
+- ✅ **Next.js 15.1.6** - Modern React framework with full SSR and SSG support
+- ✅ **React 19.0.0** - Latest React with improved performance
+- ✅ **Tailwind CSS 4.0.0** - Latest Tailwind with @import syntax
+- ✅ **Server-Side Rendering (SSR)** - Pure SSR with static generation
+- ✅ **Zero Hydration Issues** - Removed client-side conflicts
+- ✅ **Node.js 20-slim** - Optimized production base image
+- ✅ **Production-Ready Deployment** - Verified on Podman (10.30.0.14:3000)
 - ✅ **GIGW 3.0 Compliant** - Security headers and compliance built-in
-- ✅ **Macvlan Network Support** - Deploy on Podman with static IP (10.30.0.14)
+- ✅ **Macvlan Network Support** - Static IP (10.30.0.14) with mcvlan1 network
 
 ## 📋 Requirements
 
@@ -33,10 +35,6 @@ This is a **complete redesign** of the CSIR-SERC Recruitment Portal with modern 
 # Install dependencies
 npm install
 
-# Set up environment
-cp .env.local.example .env.local
-# Edit .env.local and add your Gemini API key
-
 # Run development server
 npm run dev
 
@@ -46,7 +44,7 @@ npm run dev
 ### Production Build
 
 ```bash
-# Build production bundle
+# Build production bundle (generates static HTML)
 npm run build
 
 # Start production server
@@ -55,35 +53,31 @@ npm start
 
 ## 🐳 Docker/Podman Deployment
 
-### Quick Deployment
+### Quick Deployment (Verified ✅)
 
 ```bash
 cd /home/ananth/Documents/Recruitment-Portal-NextJS
 
-# Using automatic deployment script
-./deploy-podman.sh
+# Build Docker image (automatically compiles Next.js)
+podman build -t csir-serc-recruitment-portal:3.0.0 .
 
-# OR using docker-compose
-podman-compose -f docker-compose.yml up -d
-```
-
-### Manual Deployment
-
-```bash
-# Build image
-podman build -t csir-serc-recruitment-portal:2.0.0 .
-
-# Run container
+# Run container with Macvlan network
 podman run -d \
   --name csir-serc-portal \
   --network mcvlan1 \
   --ip 10.30.0.14 \
   -p 3000:3000 \
   -e NODE_ENV=production \
-  csir-serc-recruitment-portal:2.0.0
+  csir-serc-recruitment-portal:3.0.0
 
-# Verify
+# Verify deployment
 curl http://10.30.0.14:3000
+```
+
+### Docker Compose
+
+```bash
+podman-compose -f docker-compose.yml up -d
 ```
 
 ## 📂 Project Structure
